@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
@@ -32,13 +30,16 @@ public class LayerSwitcher : MonoBehaviour
             return;
         }
 
-        Debug.Log($"TriggerEnter");
-        _contactDirection = other.transform.position - transform.position;
+        _triggered = true;
 
+        if (_switched)
+        {
+            return;
+        }
+
+        _contactDirection = other.transform.position - transform.position;
         TryInitOriginalLayers();
         ProcessCollision(_contactDirection);
-
-        _triggered = true;
 
     }
 
@@ -49,11 +50,16 @@ public class LayerSwitcher : MonoBehaviour
             return;
         }
 
-        Debug.Log($"TriggerExit");
+        _triggered = false;
+
+        if (!_switched)
+        {
+            return;
+        }
+
         _contactDirection = other.transform.position - transform.position;
         TryInitOriginalLayers();
         ProcessCollision(_contactDirection);
-        _triggered = false;
     }
 
     private void TryInitOriginalLayers() 
