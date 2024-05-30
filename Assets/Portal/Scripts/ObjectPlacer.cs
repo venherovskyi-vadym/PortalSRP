@@ -11,7 +11,9 @@ public class ObjectPlacer : MonoBehaviour, IPointerDownHandler
     [SerializeField] private Camera _camera;
     [SerializeField] private GraphicRaycaster _graphicRaycaster;
     [SerializeField] private string _arLayer;
+    [SerializeField] private Vector3 _direction;
     private GameObject _placedObject;
+    private RotatableObject[] _rotatableObjects;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -27,8 +29,17 @@ public class ObjectPlacer : MonoBehaviour, IPointerDownHandler
                 if (_placedObject == null)
                 {
                     _placedObject = Instantiate(_objectToPlace, _objectParent);
+                    _rotatableObjects = _placedObject.GetComponentsInChildren<RotatableObject>(false);
                 }
                 _placedObject.transform.position = rayCastResult.point;
+                var lookAtPos = rayCastResult.point - _camera.transform.position;
+                lookAtPos.y = 0;
+
+                for (int j = 0; j < _rotatableObjects.Length; j++)
+                {
+                    _rotatableObjects[j].ApplyRotation(Quaternion.LookRotation(lookAtPos) * Quaternion.Euler(_direction));
+                }
+
                 break;
             }
         }
