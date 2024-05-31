@@ -950,6 +950,7 @@ MonoBehaviour:
   - {fileID: 9073481503306177642}
   _layer: Default
   _switchDirectionLocal: {x: 1, y: 0, z: 0}
+  _rendererData: {fileID: 11400000, guid: 2008cd09eb2d73f4bb246b15a5106ffd, type: 2}
 --- !u!4 &2159506516871753384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8903449741633459306, guid: c44a80ca2bb0b5c4fb154e3623930b96, type: 3}

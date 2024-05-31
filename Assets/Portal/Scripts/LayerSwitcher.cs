@@ -1,21 +1,29 @@
 using Unity.XR.CoreUtils;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.XR.ARFoundation;
 
 public class LayerSwitcher : MonoBehaviour
 {
     [SerializeField] private GameObject[] _objectsToSwitchLayer;
     [SerializeField] private string _layer;
     [SerializeField] private Vector3 _switchDirectionLocal;
+    [SerializeField] private UniversalRendererData _rendererData;
     private bool _switched;
     private bool _triggered;
     private int[] _originalLayers;
     private Vector3 _contactDirection;
+    private ScriptableRendererFeature _backgroundFeature;
+    private ARCameraBackground _background;
+    private Camera _camera;
 
     private Vector3 SwitchDirection => transform.rotation * _switchDirectionLocal;
 
-    private void Awake()
+    private void Start()
     {
-        
+        _backgroundFeature = _rendererData.rendererFeatures.Find(f => f.GetType() == typeof(ARBackgroundRendererFeature));
+        _camera = Camera.main;
+        _background = _camera.GetComponent<ARCameraBackground>();
     }
 
     private void OnDrawGizmosSelected()
@@ -85,12 +93,18 @@ public class LayerSwitcher : MonoBehaviour
 
     private void SwitchLayers()
     {
+        if (_background != null)
+        {
+            _background.enabled = _switched;
+        }
+
         if (_switched)
         {
             for (int i = 0; i < _objectsToSwitchLayer.Length; i++)
             {
                 _objectsToSwitchLayer[i].SetLayerRecursively(_originalLayers[i]);
             }
+            _camera.clearFlags = CameraClearFlags.Nothing;
         }
         else
         {
@@ -98,7 +112,10 @@ public class LayerSwitcher : MonoBehaviour
             {
                 _objectsToSwitchLayer[i].SetLayerRecursively(LayerMask.NameToLayer(_layer));
             }
+            _camera.clearFlags = CameraClearFlags.Skybox;
         }
+
+        _backgroundFeature.SetActive(_switched);
 
         _switched = !_switched;
     }
